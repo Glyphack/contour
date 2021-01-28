@@ -12,6 +12,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/projectcontour/lint v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.1.0
 	github.com/prometheus/client_model v0.2.0
 	github.com/prometheus/common v0.6.0

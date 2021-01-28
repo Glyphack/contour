@@ -167,6 +167,11 @@ lint-yamllint:
 	@echo Running YAML linter ...
 	@./hack/yamllint examples/ site/examples/
 
+.PHONY: check-countor-lint
+lint-contour:
+	@echo Running Contour Go linter ...
+	@./hack/contour-lint.sh ./
+
 # Check that CLI flags are formatted consistently. We are checking
 # for calls to Kingping Flags() and Command() APIs where the 2nd
 # argument (the help text) either doesn't start with a capital letter
