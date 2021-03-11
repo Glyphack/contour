@@ -191,6 +191,11 @@ lint-flags:
 		exit 2; \
 	fi
 
+.PHONY: check-countor-lint
+lint-contour:
+	@echo Running Contour Go linter ...
+	@./hack/contour-lint.sh ./
+
 .PHONY: generate
 generate: ## Re-generate generated code and documentation
 generate: generate-rbac generate-crd-deepcopy generate-crd-yaml generate-deployment generate-api-docs generate-metrics-docs generate-uml
