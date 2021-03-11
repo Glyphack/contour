@@ -116,4 +116,4 @@ jobs:
       - name: generate
         run: |
           go mod vendor
-          make contour-lint
+          make lint-contour
