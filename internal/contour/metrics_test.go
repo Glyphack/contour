@@ -21,8 +21,8 @@ import (
 	"github.com/projectcontour/contour/internal/fixture"
 	"github.com/projectcontour/contour/internal/metrics"
 	"github.com/stretchr/testify/assert"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	core_v1 "k8s.io/api/core/v1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestHTTPProxyMetrics(t *testing.T) {
@@ -68,7 +68,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy1 is a valid httpproxy
 	proxy1 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -90,7 +90,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy2 is invalid because it contains a service with negative port
 	proxy2 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -112,7 +112,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy3 is invalid because it lives outside the roots namespace
 	proxy3 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "finance",
 			Name:      "example",
 		},
@@ -153,7 +153,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy6 is invalid because it delegates to itself, producing a cycle
 	proxy6 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "self",
 		},
@@ -172,7 +172,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy7 delegates to proxy8, which is invalid because it delegates back to proxy7
 	proxy7 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "parent",
 		},
@@ -190,7 +190,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 	}
 
 	proxy8 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "child",
 		},
@@ -231,7 +231,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy10 delegates to proxy11 and proxy12.
 	proxy10 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "parent",
 		},
@@ -254,7 +254,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 	}
 
 	proxy11 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "validChild",
 		},
@@ -273,7 +273,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy12 is invalid because it contains an invalid port
 	proxy12 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "invalidChild",
 		},
@@ -292,7 +292,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 
 	// proxy13 is invalid because it does not specify and FQDN
 	proxy13 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "parent",
 		},
@@ -311,7 +311,7 @@ func TestHTTPProxyMetrics(t *testing.T) {
 	}
 
 	proxy14 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "invalidParent",
 		},
@@ -326,13 +326,13 @@ func TestHTTPProxyMetrics(t *testing.T) {
 		},
 	}
 
-	s1 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s1 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "foo",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:     "http",
 				Protocol: "TCP",
 				Port:     12345678,
@@ -340,13 +340,13 @@ func TestHTTPProxyMetrics(t *testing.T) {
 		},
 	}
 
-	s2 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s2 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "foo",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:     "http",
 				Protocol: "TCP",
 				Port:     8080,
@@ -354,13 +354,13 @@ func TestHTTPProxyMetrics(t *testing.T) {
 		},
 	}
 
-	s3 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s3 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "home",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:     "http",
 				Protocol: "TCP",
 				Port:     8080,

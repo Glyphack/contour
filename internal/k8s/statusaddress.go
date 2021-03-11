@@ -20,9 +20,9 @@ import (
 	contour_api_v1 "github.com/projectcontour/contour/apis/projectcontour/v1"
 	"github.com/projectcontour/contour/internal/annotation"
 	"github.com/sirupsen/logrus"
-	v1 "k8s.io/api/core/v1"
+	core_v1 "k8s.io/api/core/v1"
 	"k8s.io/api/networking/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
@@ -33,7 +33,7 @@ import (
 // not more general status updates. That's a job for the StatusUpdater.
 type StatusAddressUpdater struct {
 	Logger        logrus.FieldLogger
-	LBStatus      v1.LoadBalancerStatus
+	LBStatus      core_v1.LoadBalancerStatus
 	IngressClass  string
 	StatusUpdater StatusUpdater
 	Converter     Converter
@@ -43,7 +43,7 @@ type StatusAddressUpdater struct {
 }
 
 // Set updates the LBStatus field.
-func (s *StatusAddressUpdater) Set(status v1.LoadBalancerStatus) {
+func (s *StatusAddressUpdater) Set(status core_v1.LoadBalancerStatus) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -71,7 +71,7 @@ func (s *StatusAddressUpdater) OnAdd(obj interface{}) {
 		return
 	}
 
-	var typed metav1.Object
+	var typed meta_v1.Object
 	var gvr schema.GroupVersionResource
 	var kind string
 
@@ -152,12 +152,12 @@ func (s *StatusAddressUpdater) OnDelete(obj interface{}) {
 // is desirable to clear the status.
 type ServiceStatusLoadBalancerWatcher struct {
 	ServiceName string
-	LBStatus    chan v1.LoadBalancerStatus
+	LBStatus    chan core_v1.LoadBalancerStatus
 	Log         logrus.FieldLogger
 }
 
 func (s *ServiceStatusLoadBalancerWatcher) OnAdd(obj interface{}) {
-	svc, ok := obj.(*v1.Service)
+	svc, ok := obj.(*core_v1.Service)
 	if !ok {
 		// not a service
 		return
@@ -173,7 +173,7 @@ func (s *ServiceStatusLoadBalancerWatcher) OnAdd(obj interface{}) {
 }
 
 func (s *ServiceStatusLoadBalancerWatcher) OnUpdate(oldObj, newObj interface{}) {
-	svc, ok := newObj.(*v1.Service)
+	svc, ok := newObj.(*core_v1.Service)
 	if !ok {
 		// not a service
 		return
@@ -189,7 +189,7 @@ func (s *ServiceStatusLoadBalancerWatcher) OnUpdate(oldObj, newObj interface{}) 
 }
 
 func (s *ServiceStatusLoadBalancerWatcher) OnDelete(obj interface{}) {
-	svc, ok := obj.(*v1.Service)
+	svc, ok := obj.(*core_v1.Service)
 	if !ok {
 		// not a service
 		return
@@ -197,11 +197,11 @@ func (s *ServiceStatusLoadBalancerWatcher) OnDelete(obj interface{}) {
 	if svc.Name != s.ServiceName {
 		return
 	}
-	s.notify(v1.LoadBalancerStatus{
+	s.notify(core_v1.LoadBalancerStatus{
 		Ingress: nil,
 	})
 }
 
-func (s *ServiceStatusLoadBalancerWatcher) notify(lbstatus v1.LoadBalancerStatus) {
+func (s *ServiceStatusLoadBalancerWatcher) notify(lbstatus core_v1.LoadBalancerStatus) {
 	s.LBStatus <- lbstatus
 }

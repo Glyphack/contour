@@ -20,7 +20,7 @@ import (
 	"sync"
 
 	envoy_types "github.com/envoyproxy/go-control-plane/pkg/cache/types"
-	resource "github.com/envoyproxy/go-control-plane/pkg/resource/v3"
+	resource_v3 "github.com/envoyproxy/go-control-plane/pkg/resource/v3"
 	"github.com/projectcontour/contour/internal/dag"
 	"github.com/sirupsen/logrus"
 )
@@ -134,15 +134,15 @@ func parseResources(resources []ResourceCache) map[envoy_types.ResponseType]Reso
 
 	for _, r := range resources {
 		switch r.TypeURL() {
-		case resource.ClusterType:
+		case resource_v3.ClusterType:
 			resourceMap[envoy_types.Cluster] = r
-		case resource.RouteType:
+		case resource_v3.RouteType:
 			resourceMap[envoy_types.Route] = r
-		case resource.ListenerType:
+		case resource_v3.ListenerType:
 			resourceMap[envoy_types.Listener] = r
-		case resource.SecretType:
+		case resource_v3.SecretType:
 			resourceMap[envoy_types.Secret] = r
-		case resource.EndpointType:
+		case resource_v3.EndpointType:
 			resourceMap[envoy_types.Endpoint] = r
 		}
 	}

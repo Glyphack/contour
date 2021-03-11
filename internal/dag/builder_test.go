@@ -22,10 +22,10 @@ import (
 	"github.com/projectcontour/contour/internal/fixture"
 	"github.com/projectcontour/contour/internal/timeout"
 	"github.com/stretchr/testify/assert"
-	v1 "k8s.io/api/core/v1"
+	core_v1 "k8s.io/api/core/v1"
 	networking_v1 "k8s.io/api/networking/v1"
 	"k8s.io/api/networking/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/pointer"
@@ -39,13 +39,13 @@ func gatewayPort(port int) *gatewayapi_v1alpha1.PortNumber {
 
 func TestDAGInsertGatewayAPI(t *testing.T) {
 
-	kuardService := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	kuardService := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -54,13 +54,13 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 		},
 	}
 
-	blogService := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	blogService := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blogsvc",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       80,
@@ -70,7 +70,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 	}
 
 	gatewayWithSelector := &gatewayapi_v1alpha1.Gateway{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "gatewayWithSelector",
 			Namespace: "default",
 		},
@@ -79,11 +79,11 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 				Port:     80,
 				Protocol: "HTTP",
 				Routes: gatewayapi_v1alpha1.RouteBindingSelector{
-					Selector: metav1.LabelSelector{
+					Selector: meta_v1.LabelSelector{
 						MatchLabels: map[string]string{
 							"app": "contour",
 						},
-						MatchExpressions: []metav1.LabelSelectorRequirement{{
+						MatchExpressions: []meta_v1.LabelSelectorRequirement{{
 							Key:      "type",
 							Operator: "In",
 							Values:   []string{"controller"},
@@ -95,7 +95,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 	}
 
 	gatewayNoSelector := &gatewayapi_v1alpha1.Gateway{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "gatewayWithSelector",
 			Namespace: "default",
 		},
@@ -108,7 +108,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 	}
 
 	gatewaySelectorNotMatching := &gatewayapi_v1alpha1.Gateway{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "gatewayWithSelector",
 			Namespace: "default",
 		},
@@ -117,11 +117,11 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 				Port:     80,
 				Protocol: "HTTP",
 				Routes: gatewayapi_v1alpha1.RouteBindingSelector{
-					Selector: metav1.LabelSelector{
+					Selector: meta_v1.LabelSelector{
 						MatchLabels: map[string]string{
 							"not": "matching",
 						},
-						MatchExpressions: []metav1.LabelSelectorRequirement{{
+						MatchExpressions: []meta_v1.LabelSelectorRequirement{{
 							Key:      "something",
 							Operator: "In",
 							Values:   []string{"else"},
@@ -145,7 +145,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			objs: []interface{}{
 				kuardService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -187,7 +187,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			objs: []interface{}{
 				kuardService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -229,7 +229,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			objs: []interface{}{
 				kuardService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -264,7 +264,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 				kuardService,
 				blogService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -317,7 +317,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			objs: []interface{}{
 				kuardService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -364,7 +364,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			objs: []interface{}{
 				kuardService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -403,7 +403,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			gateway: gatewayWithSelector,
 			objs: []interface{}{
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -434,7 +434,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			gateway: gatewayWithSelector,
 			objs: []interface{}{
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -466,7 +466,7 @@ func TestDAGInsertGatewayAPI(t *testing.T) {
 			objs: []interface{}{
 				kuardService,
 				&gatewayapi_v1alpha1.HTTPRoute{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "basic",
 						Namespace: "default",
 						Labels: map[string]string{
@@ -570,69 +570,69 @@ func TestDAGInsert(t *testing.T) {
 	// The DAG is sensitive to ordering, adding an ingress, then a service,
 	// should have the same result as adding a service, then an ingress.
 
-	sec1 := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	sec1 := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "secret",
 			Namespace: "default",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: secretdata(fixture.CERTIFICATE, fixture.RSA_PRIVATE_KEY),
 	}
 
 	// Invalid cert in the secret
-	sec2 := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	sec2 := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "secret",
 			Namespace: "default",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: secretdata("wrong", "wronger"),
 	}
 
 	// weird secret with a blank ca.crt that
 	// cert manager creates. #1644
-	sec3 := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	sec3 := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "secret",
 			Namespace: "default",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: map[string][]byte{
-			CACertificateKey:    []byte(""),
-			v1.TLSCertKey:       []byte(fixture.CERTIFICATE),
-			v1.TLSPrivateKeyKey: []byte(fixture.RSA_PRIVATE_KEY),
+			CACertificateKey:         []byte(""),
+			core_v1.TLSCertKey:       []byte(fixture.CERTIFICATE),
+			core_v1.TLSPrivateKeyKey: []byte(fixture.RSA_PRIVATE_KEY),
 		},
 	}
 
-	sec4 := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	sec4 := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "secret",
 			Namespace: "root",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: secretdata(fixture.CERTIFICATE, fixture.RSA_PRIVATE_KEY),
 	}
 
-	fallbackCertificateSecret := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	fallbackCertificateSecret := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "fallbacksecret",
 			Namespace: "default",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: secretdata(fixture.CERTIFICATE, fixture.RSA_PRIVATE_KEY),
 	}
 
-	fallbackCertificateSecretRootNamespace := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	fallbackCertificateSecretRootNamespace := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "fallbacksecret",
 			Namespace: "root",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: secretdata(fixture.CERTIFICATE, fixture.RSA_PRIVATE_KEY),
 	}
 
-	cert1 := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	cert1 := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "ca",
 			Namespace: "default",
 		},
@@ -642,7 +642,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i1V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -660,7 +660,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i1aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -682,7 +682,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i2V1 is functionally identical to i1V1
 	i2V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -696,7 +696,7 @@ func TestDAGInsert(t *testing.T) {
 	// i2aV1 is missing a http key from the spec.rule.
 	// see issue 606
 	i2aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -709,7 +709,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i3V1 is similar to i2V1 but includes a hostname on the ingress rule
 	i3V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -726,7 +726,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// i4V1 is like i1V1 except it uses a named service port
 	i4V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -745,7 +745,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i5V1 is functionally identical to i2V1
 	i5V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -758,7 +758,7 @@ func TestDAGInsert(t *testing.T) {
 	// i6V1 contains two named vhosts which point to the same service
 	// one of those has TLS
 	i6V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 		},
@@ -777,7 +777,7 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 	i6aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -800,7 +800,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i6bV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -820,7 +820,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i6cV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -842,7 +842,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i7V1 contains a single vhost with two paths
 	i7V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-paths",
 			Namespace: "default",
 		},
@@ -869,7 +869,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i8V1 is identical to i7V1 but uses multiple IngressRules
 	i8V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-rules",
 			Namespace: "default",
 		},
@@ -902,7 +902,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// i9V1 is identical to i8V1 but disables non TLS connections
 	i9V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-rules",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -938,7 +938,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i10aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-rules",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -965,7 +965,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i11V1 has a websocket route
 	i11V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "websocket",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -990,7 +990,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i12aV1 has an invalid timeout
 	i12aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1013,7 +1013,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i12bV1 has a reasonable timeout
 	i12bV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1036,7 +1036,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i12cV1 has an unreasonable timeout
 	i12cV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1053,7 +1053,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i12dV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1075,7 +1075,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i12eV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1097,7 +1097,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i12fV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1117,7 +1117,7 @@ func TestDAGInsert(t *testing.T) {
 	// they represent a tricky way over 'overlaying' routes from one
 	// ingress onto another
 	i13aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "app",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1144,7 +1144,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i13bV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{Name: "challenge", Namespace: "nginx-ingress"},
+		ObjectMeta: meta_v1.ObjectMeta{Name: "challenge", Namespace: "nginx-ingress"},
 		Spec: networking_v1.IngressSpec{
 			Rules: []networking_v1.IngressRule{{
 				Host: "example.com",
@@ -1161,7 +1161,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i3aV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1173,7 +1173,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i14V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1197,7 +1197,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i15V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "regex",
 			Namespace: "default",
 		},
@@ -1216,7 +1216,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i15InvalidRegexV1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "regex",
 			Namespace: "default",
 		},
@@ -1235,7 +1235,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i16V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "wildcards",
 			Namespace: "default",
 		},
@@ -1272,7 +1272,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i17V1 := &networking_v1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1285,7 +1285,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i1 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1293,7 +1293,7 @@ func TestDAGInsert(t *testing.T) {
 			Backend: backend("kuard", intstr.FromInt(8080))},
 	}
 	i1a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1306,7 +1306,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i2 is functionally identical to i1
 	i2 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1320,7 +1320,7 @@ func TestDAGInsert(t *testing.T) {
 	// i2a is missing a http key from the spec.rule.
 	// see issue 606
 	i2a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1333,7 +1333,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i3 is similar to i2 but includes a hostname on the ingress rule
 	i3 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1350,7 +1350,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// i4 is like i1 except it uses a named service port
 	i4 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1359,7 +1359,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// i5 is functionally identical to i2
 	i5 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1372,7 +1372,7 @@ func TestDAGInsert(t *testing.T) {
 	// i6 contains two named vhosts which point to the same service
 	// one of those has TLS
 	i6 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 		},
@@ -1391,7 +1391,7 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 	i6a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1413,7 +1413,7 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 	i6b := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1432,7 +1432,7 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 	i6c := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-vhosts",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1454,7 +1454,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i7 contains a single vhost with two paths
 	i7 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-paths",
 			Namespace: "default",
 		},
@@ -1487,7 +1487,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i8 is identical to i7 but uses multiple IngressRules
 	i8 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-rules",
 			Namespace: "default",
 		},
@@ -1526,7 +1526,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// i9 is identical to i8 but disables non TLS connections
 	i9 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-rules",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1568,7 +1568,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i10a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "two-rules",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1598,7 +1598,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i11 has a websocket route
 	i11 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "websocket",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1629,7 +1629,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i12a has an invalid timeout
 	i12a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1655,7 +1655,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i12b has a reasonable timeout
 	i12b := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1681,7 +1681,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// i12c has an unreasonable timeout
 	i12c := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1699,7 +1699,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i12d := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1724,7 +1724,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i12e := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1749,7 +1749,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i12f := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1770,7 +1770,7 @@ func TestDAGInsert(t *testing.T) {
 	// they represent a tricky way over 'overlaying' routes from one
 	// ingress onto another
 	i13a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "app",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1799,7 +1799,7 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 	i13b := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{Name: "challenge", Namespace: "nginx-ingress"},
+		ObjectMeta: meta_v1.ObjectMeta{Name: "challenge", Namespace: "nginx-ingress"},
 		Spec: v1beta1.IngressSpec{
 			Rules: []v1beta1.IngressRule{{
 				Host: "example.com",
@@ -1819,7 +1819,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i3a := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1831,7 +1831,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i14 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "timeout",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -1858,7 +1858,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i15 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "regex",
 			Namespace: "default",
 		},
@@ -1880,7 +1880,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i15InvalidRegex := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "regex",
 			Namespace: "default",
 		},
@@ -1902,7 +1902,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i16 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "wildcards",
 			Namespace: "default",
 		},
@@ -1947,7 +1947,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	i17 := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -1959,16 +1959,16 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 	// s3a and b have http/2 protocol annotations
-	s3a := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s3a := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 			Annotations: map[string]string{
 				"projectcontour.io/upstream-protocol.h2c": "80,http",
 			},
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       80,
@@ -1977,8 +1977,8 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s3b := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s3b := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      s3a.Name,
 			Namespace: s3a.Namespace,
 			Annotations: map[string]string{
@@ -1988,8 +1988,8 @@ func TestDAGInsert(t *testing.T) {
 		Spec: s3a.Spec,
 	}
 
-	s3c := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s3c := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      s3b.Name,
 			Namespace: s3b.Namespace,
 			Annotations: map[string]string{
@@ -1999,22 +1999,22 @@ func TestDAGInsert(t *testing.T) {
 		Spec: s3b.Spec,
 	}
 
-	sec13 := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
+	sec13 := &core_v1.Secret{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-tls",
 			Namespace: "default",
 		},
-		Type: v1.SecretTypeTLS,
+		Type: core_v1.SecretTypeTLS,
 		Data: secretdata(fixture.CERTIFICATE, fixture.RSA_PRIVATE_KEY),
 	}
 
-	s13a := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s13a := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "app-service",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2023,13 +2023,13 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s13b := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s13b := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "challenge-service",
 			Namespace: "nginx-ingress",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8009,
@@ -2039,7 +2039,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyMultipleBackends := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2063,7 +2063,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyMinTLS12 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2088,7 +2088,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyMinTLS13 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2113,7 +2113,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyMinTLSInvalid := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2138,7 +2138,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyWeightsTwoRoutesDiffWeights := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2169,7 +2169,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyWeightsOneRouteDiffWeights := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2195,7 +2195,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyRetryPolicyValidTimeout := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "bar-com",
 			Namespace: "default",
 		},
@@ -2220,7 +2220,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyRetryPolicyInvalidTimeout := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "bar-com",
 			Namespace: "default",
 		},
@@ -2245,7 +2245,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyRetryPolicyZeroRetries := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "bar-com",
 			Namespace: "default",
 		},
@@ -2270,7 +2270,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyTimeoutPolicyInvalidResponse := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "bar-com",
 			Namespace: "default",
 		},
@@ -2294,7 +2294,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyTimeoutPolicyValidResponse := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "bar-com",
 			Namespace: "default",
 		},
@@ -2318,7 +2318,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyTimeoutPolicyInfiniteResponse := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "bar-com",
 			Namespace: "default",
 		},
@@ -2341,13 +2341,13 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s1 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s1 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2357,16 +2357,16 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	// s1a carries the tls annotation
-	s1a := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s1a := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 			Annotations: map[string]string{
 				"projectcontour.io/upstream-protocol.tls": "8080",
 			},
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2376,8 +2376,8 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	// s1b carries all four ingress annotations{
-	s1b := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s1b := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 			Annotations: map[string]string{
@@ -2387,8 +2387,8 @@ func TestDAGInsert(t *testing.T) {
 				"projectcontour.io/max-retries":          "7",
 			},
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2398,13 +2398,13 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	// s2 is like s1 but with a different name
-	s2 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s2 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuarder",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2415,13 +2415,13 @@ func TestDAGInsert(t *testing.T) {
 
 	// s2a is like s1 but with a different name again.
 	// used in testing override priority.
-	s2a := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s2a := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuardest",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2431,13 +2431,13 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	// s3 is like s1 but has a different port
-	s3 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s3 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       9999,
@@ -2446,13 +2446,13 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s4 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s4 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blog",
 			Namespace: "marketing",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2461,26 +2461,26 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s9 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s9 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "nginx",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Protocol: "TCP",
 				Port:     80,
 			}},
 		},
 	}
 
-	s10 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s10 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "tls-passthrough",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "https",
 				Protocol:   "TCP",
 				Port:       443,
@@ -2494,13 +2494,13 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s11 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s11 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blog",
 			Namespace: "it",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:     "blog",
 				Protocol: "TCP",
 				Port:     8080,
@@ -2508,13 +2508,13 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s12 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s12 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "teama",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2523,13 +2523,13 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s13 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s13 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "teamb",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "http",
 				Protocol:   "TCP",
 				Port:       8080,
@@ -2538,23 +2538,23 @@ func TestDAGInsert(t *testing.T) {
 		},
 	}
 
-	s14 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s14 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "nginx",
 			Namespace: "default",
 		},
-		Spec: v1.ServiceSpec{
+		Spec: core_v1.ServiceSpec{
 			ExternalName: "externalservice.io",
-			Ports: []v1.ServicePort{{
+			Ports: []core_v1.ServicePort{{
 				Protocol: "TCP",
 				Port:     80,
 			}},
-			Type: v1.ServiceTypeExternalName,
+			Type: core_v1.ServiceTypeExternalName,
 		},
 	}
 
 	proxyDelegatedTLSSecret := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "app-with-tls-delegation",
 			Namespace: s10.Namespace,
 		},
@@ -2578,7 +2578,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy1 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2600,7 +2600,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy1a tcp forwards traffic to default/kuard:8080 by TLS pass-through it.
 	proxy1a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard-tcp",
 			Namespace: "default",
 		},
@@ -2622,7 +2622,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy1b is a straight HTTP forward, no conditions.
 	proxy1b := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2641,7 +2641,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy1c is a straight forward, with prefix and header conditions.
 	proxy1c := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2689,7 +2689,7 @@ func TestDAGInsert(t *testing.T) {
 	// proxy1d tcp forwards secure traffic to default/kuard:8080 by TLS pass-through it,
 	// insecure traffic is 301 upgraded.
 	proxy1d := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard-tcp",
 			Namespace: s1.Namespace,
 		},
@@ -2718,7 +2718,7 @@ func TestDAGInsert(t *testing.T) {
 	// proxy1e tcp forwards secure traffic to default/kuard:8080 by TLS pass-through it,
 	// insecure traffic is not 301 upgraded because of the permitInsecure: true annotation.
 	proxy1e := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard-tcp",
 			Namespace: s1.Namespace,
 		},
@@ -2748,7 +2748,7 @@ func TestDAGInsert(t *testing.T) {
 	//proxy1f is identical to proxy1 and ir1, except for a different service.
 	// Used to test priority when importing ir then httproxy.
 	proxy1f := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2769,7 +2769,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy2a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "kubesystem",
 		},
@@ -2801,7 +2801,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy2b := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "default",
 		},
@@ -2829,7 +2829,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy2c := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2855,7 +2855,7 @@ func TestDAGInsert(t *testing.T) {
 	// proxy2d is a proxy with two routes that have the same prefix and a Contains header
 	// condition on the same header, differing only in the value of the condition.
 	proxy2d := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2905,7 +2905,7 @@ func TestDAGInsert(t *testing.T) {
 	// proxy2e is a proxy with two routes that both have a condition on the same
 	// header, one using Contains and one using NotContains.
 	proxy2e := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2954,7 +2954,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy6 has TLS and does not specify min tls version
 	proxy6 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -2978,7 +2978,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy17 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3003,7 +3003,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	protocolh2 := "h2"
 	proxy17h2 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3030,7 +3030,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy18 is downstream validation, HTTP route
 	proxy18 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3058,7 +3058,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy19 is downstream validation, TCP proxying
 	proxy19 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3083,7 +3083,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy10 has a websocket route
 	proxy10 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3114,7 +3114,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy10b has a websocket route w/multiple upstreams
 	proxy10b := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3145,7 +3145,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy12 tests mirroring
 	proxy12 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3171,7 +3171,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy13 has two mirrors, invalid.
 	proxy13 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3205,7 +3205,7 @@ func TestDAGInsert(t *testing.T) {
 	// invalid because tcpproxy both includes another and
 	// has a list of services.
 	proxy37 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "simple",
 			Namespace: "roots",
 		},
@@ -3232,7 +3232,7 @@ func TestDAGInsert(t *testing.T) {
 	// Invalid because tcpproxy neither includes another httpproxy
 	// nor has a list of services.
 	proxy37a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "simple",
 			Namespace: "roots",
 		},
@@ -3250,7 +3250,7 @@ func TestDAGInsert(t *testing.T) {
 	// proxy38 is invalid when combined with proxy39
 	// as the latter is a root.
 	proxy38 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "simple",
 			Namespace: "roots",
 		},
@@ -3271,7 +3271,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy39 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "foo",
 			Namespace: s1.Namespace,
 		},
@@ -3293,7 +3293,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy39broot is a valid TCPProxy which includes to another TCPProxy
 	proxy39broot := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "root",
 			Namespace: s1.Namespace,
 		},
@@ -3314,7 +3314,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy39brootplural := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "root",
 			Namespace: s1.Namespace,
 		},
@@ -3335,7 +3335,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy39bchild := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "foo",
 			Namespace: s1.Namespace,
 		},
@@ -3350,7 +3350,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy40 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "foo",
 			Namespace: s1.Namespace,
 		},
@@ -3366,7 +3366,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// issue 2309, each route must have at least one service
 	proxy41 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "missing-service",
 			Namespace: s1.Namespace,
 		},
@@ -3384,7 +3384,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy100 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3412,7 +3412,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy100a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "marketingwww",
 			Namespace: "marketing",
 		},
@@ -3427,7 +3427,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy100b := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "marketingwww",
 			Namespace: "marketing",
 		},
@@ -3445,7 +3445,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy100c := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "marketingwww",
 			Namespace: "marketing",
 		},
@@ -3475,7 +3475,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy100d := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "marketingit",
 			Namespace: "it",
 		},
@@ -3494,7 +3494,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy101 and proxy101a test inclusion without a specified namespace.
 	proxy101 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3521,7 +3521,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy101a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuarder",
 			Namespace: proxy101.Namespace,
 		},
@@ -3537,7 +3537,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// invalid because two prefix conditions on route.
 	proxy102 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3561,7 +3561,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// invalid because two prefix conditions on include.
 	proxy103 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3588,7 +3588,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy103a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: "teama",
 		},
@@ -3608,7 +3608,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy104 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3635,7 +3635,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy104a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuarder",
 			Namespace: proxy104.Namespace,
 		},
@@ -3650,7 +3650,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy105 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3677,7 +3677,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy105a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuarder",
 			Namespace: proxy105.Namespace,
 		},
@@ -3695,7 +3695,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy106 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3722,7 +3722,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy106a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuarder",
 			Namespace: proxy105.Namespace,
 		},
@@ -3740,7 +3740,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy107 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: s1.Namespace,
 		},
@@ -3767,7 +3767,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy107a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuarder",
 			Namespace: proxy105.Namespace,
 		},
@@ -3786,7 +3786,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy108 and proxy108a test duplicate conditions on include
 	proxy108 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "root",
 			Namespace: s1.Namespace,
 		},
@@ -3828,7 +3828,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy108a := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blogteama",
 			Namespace: "teama",
 		},
@@ -3843,7 +3843,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxy108b := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blogteamb",
 			Namespace: "teamb",
 		},
@@ -3858,7 +3858,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyReplaceHostHeaderRoute := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3885,7 +3885,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyReplaceHostHeaderService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3912,7 +3912,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyReplaceHostHeaderMultiple := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3945,7 +3945,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyReplaceNonHostHeader := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3972,7 +3972,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyReplaceHeaderEmptyValue := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -3998,7 +3998,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyCookieLoadBalancer := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4022,7 +4022,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyLoadBalancerHashPolicyHeader := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4073,7 +4073,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyLoadBalancerHashPolicyHeaderAllInvalid := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4108,7 +4108,7 @@ func TestDAGInsert(t *testing.T) {
 
 	// proxy109 has a route that rewrites headers.
 	proxy109 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4147,7 +4147,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// proxy111 has a route that rewrites headers.
 	proxy111 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4174,7 +4174,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	// proxy112 has a route that rewrites headers.
 	proxy112 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4201,7 +4201,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 	protocol := "h2c"
 	proxy110 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4223,7 +4223,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	proxyExternalNameService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -4244,7 +4244,7 @@ func TestDAGInsert(t *testing.T) {
 	}
 
 	tcpProxyExternalNameService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "default",
 		},
@@ -6229,7 +6229,7 @@ func TestDAGInsert(t *testing.T) {
 		"insert httproxy with invalid include": {
 			objs: []interface{}{
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Namespace: "default",
 						Name:      "example-com",
 					},
@@ -7166,7 +7166,7 @@ func TestDAGInsert(t *testing.T) {
 				sec1,
 				s9,
 				&networking_v1.Ingress{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7182,7 +7182,7 @@ func TestDAGInsert(t *testing.T) {
 					},
 				},
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7232,7 +7232,7 @@ func TestDAGInsert(t *testing.T) {
 				sec1,
 				s9,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7289,7 +7289,7 @@ func TestDAGInsert(t *testing.T) {
 			objs: []interface{}{
 				s9,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7676,7 +7676,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7728,7 +7728,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7759,7 +7759,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecretRootNamespace,
 				&contour_api_v1.TLSCertificateDelegation{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "fallbackcertdelegation",
 						Namespace: "root",
 					},
@@ -7771,7 +7771,7 @@ func TestDAGInsert(t *testing.T) {
 					},
 				},
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7823,7 +7823,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecretRootNamespace,
 				&contour_api_v1.TLSCertificateDelegation{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "fallbackcertdelegation",
 						Namespace: "root",
 					},
@@ -7835,7 +7835,7 @@ func TestDAGInsert(t *testing.T) {
 					},
 				},
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7887,7 +7887,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7917,7 +7917,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7950,7 +7950,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -7971,7 +7971,7 @@ func TestDAGInsert(t *testing.T) {
 					},
 				},
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx-disabled",
 						Namespace: "default",
 					},
@@ -8033,7 +8033,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -8084,7 +8084,7 @@ func TestDAGInsert(t *testing.T) {
 				s9,
 				fallbackCertificateSecret,
 				&contour_api_v1.HTTPProxy{
-					ObjectMeta: metav1.ObjectMeta{
+					ObjectMeta: meta_v1.ObjectMeta{
 						Name:      "nginx",
 						Namespace: "default",
 					},
@@ -8230,7 +8230,7 @@ func ingressrulev1value(backend *networking_v1.IngressBackend) networking_v1.Ing
 
 func TestDAGRootNamespaces(t *testing.T) {
 	proxy1 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "allowed1",
 		},
@@ -8249,7 +8249,7 @@ func TestDAGRootNamespaces(t *testing.T) {
 
 	// proxy2 is like proxy1, but in a different namespace
 	proxy2 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "allowed2",
 		},
@@ -8266,13 +8266,13 @@ func TestDAGRootNamespaces(t *testing.T) {
 		},
 	}
 
-	s2 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s2 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "allowed1",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:     "http",
 				Protocol: "TCP",
 				Port:     8080,
@@ -8280,13 +8280,13 @@ func TestDAGRootNamespaces(t *testing.T) {
 		},
 	}
 
-	s3 := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	s3 := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard",
 			Namespace: "allowed2",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:     "http",
 				Protocol: "TCP",
 				Port:     8080,
@@ -8883,7 +8883,7 @@ func clusters(services ...*Service) (c []*Cluster) {
 	return c
 }
 
-func service(s *v1.Service) *Service {
+func service(s *core_v1.Service) *Service {
 	return &Service{
 		Weighted: WeightedService{
 			Weight:           1,
@@ -8894,7 +8894,7 @@ func service(s *v1.Service) *Service {
 	}
 }
 
-func clustermap(services ...*v1.Service) []*Cluster {
+func clustermap(services ...*core_v1.Service) []*Cluster {
 	var c []*Cluster
 	for _, s := range services {
 		c = append(c, &Cluster{
@@ -8904,7 +8904,7 @@ func clustermap(services ...*v1.Service) []*Cluster {
 	return c
 }
 
-func secret(s *v1.Secret) *Secret {
+func secret(s *core_v1.Secret) *Secret {
 	return &Secret{
 		Object: s,
 	}
@@ -8921,7 +8921,7 @@ func virtualhost(name string, first *Route, rest ...*Route) *VirtualHost {
 	}
 }
 
-func securevirtualhost(name string, sec *v1.Secret, first *Route, rest ...*Route) *SecureVirtualHost {
+func securevirtualhost(name string, sec *core_v1.Secret, first *Route, rest ...*Route) *SecureVirtualHost {
 	return &SecureVirtualHost{
 		VirtualHost: VirtualHost{
 			Name:   name,

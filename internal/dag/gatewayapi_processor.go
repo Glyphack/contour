@@ -15,7 +15,7 @@ package dag
 
 import (
 	"github.com/sirupsen/logrus"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -84,11 +84,11 @@ func (p *GatewayAPIProcessor) Run(dag *DAG, source *KubernetesCache) {
 }
 
 // selectorMatches returns true if the selector matches the labels on the object or is not defined.
-func selectorMatches(selector metav1.LabelSelector, objLabels map[string]string) (bool, error) {
+func selectorMatches(selector meta_v1.LabelSelector, objLabels map[string]string) (bool, error) {
 
 	// If a selector is defined then check that it matches the labels on the object.
 	if len(selector.MatchLabels) > 0 || len(selector.MatchExpressions) > 0 {
-		l, err := metav1.LabelSelectorAsSelector(&selector)
+		l, err := meta_v1.LabelSelectorAsSelector(&selector)
 		if err != nil {
 			return false, err
 		}

@@ -20,9 +20,9 @@ import (
 	"github.com/projectcontour/contour/internal/fixture"
 	"github.com/projectcontour/contour/internal/status"
 	"github.com/stretchr/testify/assert"
-	v1 "k8s.io/api/core/v1"
+	core_v1 "k8s.io/api/core/v1"
 	"k8s.io/api/networking/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
@@ -71,7 +71,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyNoFQDN is invalid because it does not specify and FQDN
 	proxyNoFQDN := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace:  "roots",
 			Name:       "parent",
 			Generation: 23,
@@ -101,7 +101,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// Simple Valid HTTPProxy
 	proxyValidHomeService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace:  "roots",
 			Name:       "example",
 			Generation: 24,
@@ -133,7 +133,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// Multiple Includes, one invalid
 	proxyMultiIncludeOneInvalid := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace:  "roots",
 			Name:       "parent",
 			Generation: 45,
@@ -157,7 +157,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyIncludeValidChild := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "parentvalidchild",
 		},
@@ -175,7 +175,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyChildValidFoo2 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace:  "roots",
 			Name:       "validChild",
 			Generation: 1,
@@ -191,7 +191,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyChildInvalidBadPort := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "invalidChild",
 		},
@@ -236,7 +236,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	ingressSharedService := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "nginx",
 			Namespace: fixture.ServiceRootsNginx.Namespace,
 		},
@@ -253,7 +253,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyTCPSharedService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "nginx",
 			Namespace: fixture.ServiceRootsNginx.Namespace,
 		},
@@ -286,7 +286,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyDelegatedTCPTLS := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "app-with-tls-delegation",
 			Namespace: "roots",
 		},
@@ -320,7 +320,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyDelegatedTLS := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "app-with-tls-delegation",
 			Namespace: "roots",
 		},
@@ -353,13 +353,13 @@ func TestDAGStatus(t *testing.T) {
 		},
 	})
 
-	serviceTLSPassthrough := &v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
+	serviceTLSPassthrough := &core_v1.Service{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "tls-passthrough",
 			Namespace: "roots",
 		},
-		Spec: v1.ServiceSpec{
-			Ports: []v1.ServicePort{{
+		Spec: core_v1.ServiceSpec{
+			Ports: []core_v1.ServicePort{{
 				Name:       "https",
 				Protocol:   "TCP",
 				Port:       443,
@@ -374,7 +374,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyPassthroughProxyNonSecure := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "kuard-tcp",
 			Namespace: serviceTLSPassthrough.Namespace,
 		},
@@ -417,7 +417,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyMultipleIncludersSite1 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "site1",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -433,7 +433,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyMultipleIncludersSite2 := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "site2",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -449,7 +449,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyMultiIncludeChild := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -482,7 +482,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyInvalidNegativePortHomeService is invalid because it contains a service with negative port
 	proxyInvalidNegativePortHomeService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -513,7 +513,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyInvalidOutsideRootNamespace is invalid because it lives outside the roots namespace
 	proxyInvalidOutsideRootNamespace := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "finance",
 			Name:      "example",
 		},
@@ -544,7 +544,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyInvalidIncludeCycle is invalid because it delegates to itself, producing a cycle
 	proxyInvalidIncludeCycle := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "self",
 			Namespace: "roots",
 		},
@@ -579,7 +579,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyIncludesProxyWithIncludeCycle delegates to proxy8, which is invalid because proxy8 delegates back to proxy8
 	proxyIncludesProxyWithIncludeCycle := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "parent",
 			Namespace: "roots",
 		},
@@ -598,7 +598,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyIncludedChildInvalidIncludeCycle := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "child",
 			Namespace: "roots",
 		},
@@ -634,7 +634,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyIncludedChildValid := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "validChild",
 			Namespace: "roots",
 		},
@@ -650,7 +650,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyNotRootIncludeRootProxy delegates to proxyWildCardFQDN but it is invalid because it is missing fqdn
 	proxyNotRootIncludeRootProxy := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "invalidParent",
 		},
@@ -680,7 +680,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyWildCardFQDN is invalid because it contains a wildcarded fqdn
 	proxyWildCardFQDN := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -711,7 +711,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyInvalidServiceInvalid is invalid because it references an invalid service
 	proxyInvalidServiceInvalid := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "invalidir",
 		},
@@ -742,7 +742,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// proxyInvalidServicePortInvalid is invalid because it references an invalid port on a service
 	proxyInvalidServicePortInvalid := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "invalidir",
 		},
@@ -772,7 +772,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyValidExampleCom := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "example-com",
 			Namespace: "roots",
 		},
@@ -793,7 +793,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyValidReuseExampleCom := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "other-example",
 			Namespace: "roots",
 		},
@@ -811,7 +811,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyValidReuseCaseExampleCom := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "case-example",
 			Namespace: "roots",
 		},
@@ -853,7 +853,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyRootIncludesRoot := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "root-blog",
 			Namespace: "roots",
 		},
@@ -875,7 +875,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyRootIncludedByRoot := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blog",
 			Namespace: fixture.ServiceMarketingGreen.Namespace,
 		},
@@ -908,7 +908,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyIncludesRootDifferentFQDN := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "root-blog",
 			Namespace: "roots",
 		},
@@ -927,7 +927,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyRootIncludedByRootDiffFQDN := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blog",
 			Namespace: fixture.ServiceMarketingGreen.Namespace,
 		},
@@ -957,7 +957,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyValidIncludeBlogMarketing := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "blog",
 			Namespace: fixture.ServiceMarketingGreen.Namespace,
 		},
@@ -972,7 +972,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyRootValidIncludesBlogMarketing := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "root-blog",
 			Namespace: "roots",
 		},
@@ -1003,7 +1003,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyValidWithMirror := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1037,7 +1037,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidTwoMirrors := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1072,7 +1072,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidDuplicateMatchConditionHeaders := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1112,7 +1112,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidDuplicateIncludeCondtionHeaders := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1146,7 +1146,7 @@ func TestDAGStatus(t *testing.T) {
 		},
 	}
 	proxyValidDelegatedRoots := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "delegated",
 		},
@@ -1174,7 +1174,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidRouteConditionHeaders := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1213,7 +1213,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidMultiplePrefixes := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1247,7 +1247,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidTwoPrefixesWithInclude := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1276,7 +1276,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyValidChildTeamA := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "child",
 			Namespace: "teama",
 		},
@@ -1303,7 +1303,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidPrefixNoSlash := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1335,7 +1335,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidIncludePrefixNoSlash := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "www",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1372,7 +1372,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidTCPProxyIncludeAndService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "simple",
 			Namespace: "roots",
 		},
@@ -1405,7 +1405,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPNoServiceOrInclusion := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "simple",
 			Namespace: "roots",
 		},
@@ -1429,7 +1429,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPIncludesFoo := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "simple",
 			Namespace: "roots",
 		},
@@ -1458,7 +1458,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyValidTCPRoot := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "foo",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1488,7 +1488,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPValidChildFoo := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "foo",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1511,7 +1511,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidConflictingIncludeConditions := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1545,7 +1545,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyValidBlogTeamA := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "blogteama",
 			Name:      "teama",
 		},
@@ -1563,7 +1563,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyValidBlogTeamB := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "blogteamb",
 			Name:      "teamb",
 		},
@@ -1594,7 +1594,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidConflictHeaderConditions := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1647,7 +1647,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidDuplicateHeaderAndPathConditions := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1704,7 +1704,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidMissingInclude := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -1727,7 +1727,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPInvalidMissingService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "missing-tcp-proxy-service",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1756,7 +1756,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPInvalidPortNotMatched := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "tcp-proxy-service-missing-port",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1785,7 +1785,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPInvalidMissingTLS := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "missing-tls",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1811,7 +1811,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyInvalidMissingServiceWithTCPProxy := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "missing-route-service",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1845,7 +1845,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyRoutePortNotMatchedWithTCP := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "missing-route-service-port",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1879,7 +1879,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	proxyTCPValidIncludeChild := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "validtcpproxy",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1900,7 +1900,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyTCPValidIncludesChild := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "validtcpproxy",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1921,7 +1921,7 @@ func TestDAGStatus(t *testing.T) {
 	}
 
 	proxyTCPValidChild := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "child",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1957,7 +1957,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// issue 2309
 	proxyInvalidNoServices := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "missing-service",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -1983,7 +1983,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	fallbackCertificate := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -2030,7 +2030,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	fallbackCertificateWithClientValidation := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: "roots",
 			Name:      "example",
 		},
@@ -2067,7 +2067,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	tlsPassthroughAndValidation := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "invalid",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -2094,7 +2094,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	tlsPassthroughAndSecretName := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "invalid",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -2122,7 +2122,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	tlsNoPassthroughOrSecretName := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "invalid",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -2150,7 +2150,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	emptyProxy := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "empty",
 			Namespace: "roots",
 		},
@@ -2170,7 +2170,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	invalidRequestHeadersPolicyService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "invalidRHPService",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -2204,7 +2204,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	invalidResponseHeadersPolicyService := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "invalidRHPService",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -2238,7 +2238,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	invalidResponseHeadersPolicyRoute := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Name:      "invalidRHPRoute",
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 		},
@@ -2300,7 +2300,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	invalidResponseTimeout := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 			Name:      "invalid-timeouts",
 		},
@@ -2335,7 +2335,7 @@ func TestDAGStatus(t *testing.T) {
 	})
 
 	invalidIdleTimeout := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace: fixture.ServiceRootsKuard.Namespace,
 			Name:      "invalid-timeouts",
 		},
@@ -2371,7 +2371,7 @@ func TestDAGStatus(t *testing.T) {
 
 	// issue 3197: Fallback and passthrough HTTPProxy directive should emit a config error
 	tlsPassthroughAndFallback := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace:  "roots",
 			Name:       "example",
 			Generation: 24,
@@ -2407,7 +2407,7 @@ func TestDAGStatus(t *testing.T) {
 		},
 	})
 	tlsPassthrough := &contour_api_v1.HTTPProxy{
-		ObjectMeta: metav1.ObjectMeta{
+		ObjectMeta: meta_v1.ObjectMeta{
 			Namespace:  "roots",
 			Name:       "example",
 			Generation: 24,
